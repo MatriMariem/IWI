@@ -1,0 +1,121 @@
+
+tags:
+- name: "Homepage"
+- name: "user"
+  description: "everything about user account and profile"
+- name: "event"
+  description: "everything about events"
+- name: "club"
+  description: "everything about clubs"
+- name: "gig"
+  description: "everything about gigs"
+- name: "post"
+  description: "create, edit and delete posts"
+- name: "comment"
+  description: "add, edit and delete comments"
+- name: "reply"
+  description: "reply to comments"
+
+schemes:
+- "http"
+
+paths:
+  /:
+    get:
+      tags:
+      - "Homepage"
+      responses:
+        200:
+          description: Returns "Homepage"
+
+  /api/users:
+    get:
+      summary: Get all users
+      description: Get all users
+      tags:
+      - "user"
+      responses:
+        200:
+          description: Returns an array of user objects.
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+
+  /api/users/{userId}:
+    get:
+      summary: Find a user by id
+      description: Find a user by id
+      tags:
+      - "user"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "ID of user to return"
+        required: true
+      responses:
+        200:
+          description: Returns one user object.
+          schema:
+            type: "object"
+            $ref: "#/definitions/User"
+        404:
+          description: User not found
+
+  /api/users/signup:
+    post:
+      summary: Create a user account
+      description: Create a user account
+      tags:
+      - "user"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: "user email"
+                  default: "user@email.com"
+                username:
+                  type: string
+                  description: "username"
+                  default: "username"
+                firstName:
+                  type: string
+                  description: "first name"
+                  default: "first name"
+                lastName:
+                  type: string
+                  description: " last name"
+                  default: "last name"
+                password:
+                  type: string
+                  description: "user password"
+                  default: "password"
+              required:
+                - email
+                - username
+                - firstName
+                - lastName
+                - password
+      responses:
+        201:
+          description: "Successfully created"
+          schema:
+            type: "object"
+        409:
+          description: "Already exists"
+
+/api/gigs:
+  post:
+    tags:
+      - "gig"
+    description: Welcome to swagger-jsdoc!
+    responses:
+      200:
+        description: Returns a mysterious string.
+    security:
+      - auth-token: []

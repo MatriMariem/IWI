@@ -1,0 +1,63 @@
+definitions:
+  User:
+    type: "object"
+    properties:
+      _id:
+        type: "string"
+        description: "id of the object"
+      username:
+        type: "string"
+        description: "username of the user"
+      firstName:
+        type: "string"
+        description: "first name of the user"
+      lastName:
+        type: "string"
+        description: "last name of the user"
+      email:
+        type: "string"
+        description: "email of the user"
+      password:
+        type: "string"
+        description: "hashed password of the user"
+      phone:
+        type: "string"
+        description: "phone number of the user"
+      sex:
+        type: "string"
+        description: "gender of the user"
+      posts:
+        type: "array"
+      comments:
+        type: "array"
+      notifications:
+        type: "array"
+      userGigs:
+        type: "array"
+        items:
+          createdGigs:
+            type: "array"
+          appliedToGigs:
+            type: "array"
+          acceptedAtGigs:
+            type: "array"
+      userClubs:
+        type: "array"
+        items:
+          createdClubs:
+            type: "array"
+          adminOfClubs:
+            type: "array"
+          joinedClubs:
+            type: "array"
+          pendingRequests:
+            type: "array"
+      userEvents:
+        type: "array"
+        items:
+          createdEvents:
+            type: "array"
+          participantInEvents:
+            type: "array"
+          interestedInEvents:
+            type: "array"

@@ -31,14 +31,12 @@ usersRouter.get('/:id', async (req, res) => {
     // const user = await User.findById(req.params.id).populate({ path: 'posts', select: 'content createdAt', populate: {path: 'createdIn', select: 'title'}, populate: {path: 'comments', select: 'content createdAt', populate: {path: 'createdBy', select: 'username'}}}).populate({ path: 'userClubs.createdClubs', select: 'title' });
     const user = await User.findById(req.params.id)
     if (!user) {
-      res.status(404).send('Cannot be found');
-      return;
+      return res.status(404).send('Cannot be found');
     }
-    res.send(user);
+    return res.send(user);
   } catch (error) {
-    res.status(500).json({ message: error, });
+    return res.status(500).json({ message: error, });
   }
-  res.send(user);
 });
 
 // SIGNUP
@@ -47,14 +45,14 @@ usersRouter.post('/signup', async (req, res) => {
     // SIGNUP INPUT DATA VALIDATION
     let alreadyExist = await User.findOne({"email": req.body.email});
     if (alreadyExist) {
-      return res.send({
+      return res.status(409).send({
         status: 'error',
         message: 'Email already used',
       });
     }
     alreadyExist = await User.findOne({"username": req.body.username});
     if (alreadyExist) {
-      return res.send({
+      return res.status(409).send({
         status: 'error',
         message: 'Username already used',
       });
@@ -70,12 +68,12 @@ usersRouter.post('/signup', async (req, res) => {
     const user = new User(userData);
     const savedUser = await user.save();
     // res.json(savedUser);
-    res.send({
+    res.status(201).send({
       status: 'success',
       message: "Account successfully created",
     });
   } catch (error) {
-    res.send({
+    res.status(500).send({
       status: 'error',
       message: error,
     });
