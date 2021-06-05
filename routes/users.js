@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const auth = require('./auth');
 const postsRouter = require('./posts');
 
+const ObjectId = require('mongoose').Types.ObjectId;
 
 usersRouter.use('/:userId/posts', postsRouter);
 
@@ -29,6 +30,9 @@ usersRouter.get('/', async (req, res) => {
 usersRouter.get('/:id', async (req, res) => {
   try {
     // const user = await User.findById(req.params.id).populate({ path: 'posts', select: 'content createdAt', populate: {path: 'createdIn', select: 'title'}, populate: {path: 'comments', select: 'content createdAt', populate: {path: 'createdBy', select: 'username'}}}).populate({ path: 'userClubs.createdClubs', select: 'title' });
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(400).send('Bad Request');
+    }
     const user = await User.findById(req.params.id)
     if (!user) {
       return res.status(404).send('Cannot be found');
