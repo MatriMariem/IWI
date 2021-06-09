@@ -7,6 +7,10 @@ const jsonParser = bodyParser.json();
 const auth = require('./auth');
 const postsRouter = require('./posts');
 
+
+const ObjectId = require('mongoose').Types.ObjectId;
+
+
 clubsRouter.use('/:clubId/posts', postsRouter);
 
 // GET ALL CLUBS && GET CLUBS BY SEARCH FILTERS AND KEYWORDS.
@@ -38,6 +42,10 @@ clubsRouter.get('/', async (req, res) => {
 // GET A SPECIFIC CLUB
 clubsRouter.get('/:id', async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const club = await Club.findById(req.params.id);
     if (!club) {
       res.status(404).send('Cannot be found');
@@ -51,6 +59,10 @@ clubsRouter.get('/:id', async (req, res) => {
 // GET ALL MEMBERS OF A CLUB
 clubsRouter.get('/:id/members', async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const club = await Club.findById(req.params.id);
     if (!club) {
       res.status(404).send('Cannot be found');
@@ -81,6 +93,10 @@ clubsRouter.post('/', auth, async (req, res) => {
 // EDIT THE CLUB
 clubsRouter.patch('/:id', auth, async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const club = await Club.findById(req.params.id);
     if (!club) {
       res.status(404).send('Cannot be found');
@@ -103,6 +119,10 @@ clubsRouter.patch('/:id', auth, async (req, res) => {
 // ACCEPT A PENDING REQUEST OF A USER
 clubsRouter.post('/:clubId/requests/accept/:userId', auth, async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const club = await Club.findById(req.params.clubId);
     if (!club) {
       res.status(404).send('Cannot be found');
@@ -120,7 +140,14 @@ clubsRouter.post('/:clubId/requests/accept/:userId', auth, async (req, res) => {
     const savedClub = await club.save();
 
     // Send a notification to the accepted user
+    if (!ObjectId.isValid(req.user._id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const user = await User.findById(req.user._id)
+
+    if (!ObjectId.isValid(req.params.userId)) {
+      return res.status(404).send('Cannot be found');
+    }
     const acceptedUser = await User.findById(req.params.userId)
     const notif = {
       action: 'ClubMemberAccepted',
@@ -145,6 +172,9 @@ clubsRouter.post('/:clubId/requests/accept/:userId', auth, async (req, res) => {
 // REFUSE A PENDING REQUEST OF A USER
 clubsRouter.post('/:clubId/requests/refuse/:userId', auth, async (req, res) => {
   try {
+    if (!ObjectId.isValid(req.params.clubId)) {
+      return res.status(404).send('Cannot be found');
+    }
     const club = await Club.findById(req.params.clubId);
     if (!club) {
       res.status(404).send('Cannot be found');
@@ -172,6 +202,9 @@ clubsRouter.post('/:clubId/requests/refuse/:userId', auth, async (req, res) => {
 // DELETE A MEMBER FROM THE CLUB
 clubsRouter.post('/:clubId/members/delete/:userId', auth, async (req, res) => {
   try {
+    if (!ObjectId.isValid(req.params.clubId)) {
+      return res.status(404).send('Cannot be found');
+    }
     const club = await Club.findById(req.params.clubId);
     if (!club) {
       res.status(404).send('Cannot be found');
@@ -199,6 +232,9 @@ clubsRouter.post('/:clubId/members/delete/:userId', auth, async (req, res) => {
 // DELETE THE CLUB
 clubsRouter.delete('/:id', auth, async (req, res) => {
   try {
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const club = await Club.findById(req.params.id);
     if (!club) {
       res.status(404).send('Cannot be found');
@@ -236,6 +272,9 @@ clubsRouter.delete('/:id', auth, async (req, res) => {
 // SEND A REQUEST TO JOIN A CLUB
 clubsRouter.post('/:id/join', auth, async (req, res) => {
   try {
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const club = await Club.findById(req.params.id);
     if (!club) {
       res.status(404).send('Cannot be found');
@@ -249,6 +288,10 @@ clubsRouter.post('/:id/join', auth, async (req, res) => {
 
     // Send Notification to the club creator
     const owner = await User.findById(club.createdBy)
+
+    if (!ObjectId.isValid(req.user._id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const user = await User.findById(req.user._id)
     const notif = {
       action: 'ClubRequestSent',
@@ -274,6 +317,9 @@ clubsRouter.post('/:id/join', auth, async (req, res) => {
 // IMMEDIATELY FOLLOW A CLUB
 clubsRouter.post('/:id/follow', auth, async (req, res) => {
   try {
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const club = await Club.findById(req.params.id);
     if (!club) {
       res.status(404).send('Cannot be found');
@@ -287,6 +333,9 @@ clubsRouter.post('/:id/follow', auth, async (req, res) => {
 
     // Send Notification to the club creator
     const owner = await User.findById(club.createdBy)
+    if (!ObjectId.isValid(req.user._id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const user = await User.findById(req.user._id)
     const notif = {
       action: 'ClubFollowed',
@@ -313,6 +362,9 @@ clubsRouter.post('/:id/follow', auth, async (req, res) => {
 // CANCEL YOUR REQUEST
 clubsRouter.post('/:id/cancel', auth, async (req, res) => {
   try {
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const club = await Club.findById(req.params.id);
     if (!club) {
       res.status(404).send('Cannot be found');
@@ -339,6 +391,9 @@ clubsRouter.post('/:id/cancel', auth, async (req, res) => {
 // LEAVE THE CLUB
 clubsRouter.post('/:id/leave', auth, async (req, res) => {
   try {
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const club = await Club.findById(req.params.id);
     if (!club) {
       res.status(404).send('Cannot be found');

@@ -9,6 +9,8 @@ const auth = require('./auth');
 const commentsRouter = require('./comments');
 
 
+const ObjectId = require('mongoose').Types.ObjectId;
+
 gigsRouter.use('/:gigId/reviews', commentsRouter);
 
 // GENERAL (FOR BOTH GIG CREATORS AND USUAL USERS)---------------START
@@ -49,6 +51,10 @@ gigsRouter.get('/', async (req, res) => {
 // GET A specific Gig
 gigsRouter.get('/:id', async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const gig = await Gig.findById(req.params.id);
     if (!gig) {
       res.status(404).send('Cannot be found');
@@ -89,6 +95,10 @@ gigsRouter.post('/', auth, async (req, res) => {
 // EDIT YOUR GIG
 gigsRouter.patch('/:id', auth, async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const gig = await Gig.findById(req.params.id);
     if (!gig) {
       res.status(404).send('Cannot be found');
@@ -110,6 +120,10 @@ gigsRouter.patch('/:id', auth, async (req, res) => {
 // view applicants and accepted applicants
 gigsRouter.get('/:id/candidates', auth, async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const gig = await Gig.findById(req.params.id);
     if (!gig) {
       res.status(404).send('Cannot be found');
@@ -131,6 +145,10 @@ gigsRouter.get('/:id/candidates', auth, async (req, res) => {
 // Accept an applicant
 gigsRouter.post('/:gigId/applicants/accept/:userId', auth, async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.gigId)) {
+      return res.status(404).send('Cannot be found');
+    }
     const gig = await Gig.findById(req.params.gigId);
     if (!gig) {
       res.status(404).send('Cannot be found');
@@ -148,7 +166,15 @@ gigsRouter.post('/:gigId/applicants/accept/:userId', auth, async (req, res) => {
     const savedGig = await gig.save();
 
     // Send a notification to the accepted applicant
+
+    if (!ObjectId.isValid(req.user._id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const user = await User.findById(req.user._id)
+
+    if (!ObjectId.isValid(req.params.userId)) {
+      return res.status(404).send('Cannot be found');
+    }
     const acceptedUser = await User.findById(req.params.userId)
     const notif = {
       action: 'GigApplicantAccepted',
@@ -174,6 +200,10 @@ gigsRouter.post('/:gigId/applicants/accept/:userId', auth, async (req, res) => {
 // Refuse an applicant
 gigsRouter.post('/:gigId/applicants/refuse/:userId', auth, async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.gigId)) {
+      return res.status(404).send('Cannot be found');
+    }
     const gig = await Gig.findById(req.params.gigId);
     if (!gig) {
       res.status(404).send('Cannot be found');
@@ -190,7 +220,14 @@ gigsRouter.post('/:gigId/applicants/refuse/:userId', auth, async (req, res) => {
     const savedGig = await gig.save();
 
     // Send a notification to the refused applicant
+    if (!ObjectId.isValid(req.user._id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const user = await User.findById(req.user._id)
+
+    if (!ObjectId.isValid(req.params.userId)) {
+      return res.status(404).send('Cannot be found');
+    }
     const refusedUser = await User.findById(req.params.userId)
     const notif = {
       action: 'GigApplicantRefused',
@@ -212,6 +249,10 @@ gigsRouter.post('/:gigId/applicants/refuse/:userId', auth, async (req, res) => {
 // CLOSE AND REOPEN YOUR GIG
 gigsRouter.patch('/:id/close', auth, async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const gig = await Gig.findById(req.params.id);
     if (!gig) {
       res.status(404).send('Cannot be found');
@@ -239,6 +280,10 @@ gigsRouter.patch('/:id/close', auth, async (req, res) => {
 // DELETE YOUR GIG
 gigsRouter.delete('/:id', async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const gig = await Gig.findById(req.params.id);
     if (!gig) {
       res.status(404).send('Cannot be found');
@@ -275,6 +320,10 @@ gigsRouter.delete('/:id', async (req, res) => {
 // Apply to a gig
 gigsRouter.post('/:id/apply', auth, async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const gig = await Gig.findById(req.params.id);
     if (!gig) {
       res.status(404).send('Cannot be found');
@@ -291,6 +340,10 @@ gigsRouter.post('/:id/apply', auth, async (req, res) => {
 
     // Send a notification to the gig creator
     const owner = await User.findById(gig.createdBy)
+    
+    if (!ObjectId.isValid(req.user._id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const user = await User.findById(req.user._id)
     const notif = {
       action: 'GigApplicantApplied',
@@ -315,6 +368,10 @@ gigsRouter.post('/:id/apply', auth, async (req, res) => {
 // Cancel application
 gigsRouter.post('/:id/cancel', auth, async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const gig = await Gig.findById(req.params.id);
     if (!gig) {
       res.status(404).send('Cannot be found');

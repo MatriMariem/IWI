@@ -8,6 +8,8 @@ const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 const auth = require('./auth');
 
+const ObjectId = require('mongoose').Types.ObjectId;
+
 commentsRouter.use('/:commentId/reply', commentsRouter);
 
 // Potential parents of a comment: a comment can be writted on a post
@@ -31,6 +33,10 @@ commentsRouter.get('/', async (req, res) => {
   try {
 
     const p = findParent(parents, req.params);
+
+    if (!ObjectId.isValid(req.params[p])) {
+      return res.status(404).send('Cannot be found');
+    }
     const parent = await parents[p].findById(req.params[p])
     if (!parent) {
       res.status(404).send('Cannot be found');
@@ -47,6 +53,10 @@ commentsRouter.get('/', async (req, res) => {
 // GET A SPECIFIC COMMENT
 commentsRouter.get('/:id', async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const comment = await Comment.findById(req.params.id)
     if (!comment)
     {
@@ -65,10 +75,18 @@ commentsRouter.post('/', auth, async (req, res) => {
   try {
 
     const p = findParent(parents, req.params);
+
+    if (!ObjectId.isValid(req.params[p])) {
+      return res.status(404).send('Cannot be found');
+    }
     const parent = await parents[p].findById(req.params[p])
     if (!parent) {
       res.status(404).send('Cannot be found');
       return;
+    }
+
+    if (!ObjectId.isValid(req.user._id)) {
+      return res.status(404).send('Cannot be found');
     }
     const user = await User.findById(req.user._id);
 
@@ -121,6 +139,10 @@ commentsRouter.post('/', auth, async (req, res) => {
 // EDIT YOUR COMMENT
 commentsRouter.patch('/:id', auth, async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const comment = await Comment.findById(req.params.id)
     if (!comment)
     {
@@ -133,6 +155,10 @@ commentsRouter.patch('/:id', auth, async (req, res) => {
     }
 
     const p = findParent(parents, req.params);
+
+    if (!ObjectId.isValid(req.params[p])) {
+      return res.status(404).send('Cannot be found');
+    }
     const parent = await parents[p].findById(req.params[p])
     if (!parent) {
       res.status(404).send('Cannot be found');
@@ -142,6 +168,9 @@ commentsRouter.patch('/:id', auth, async (req, res) => {
     // Send a notification to the user that you commented to
     // if you commented on a post, then the post owner will be notified
     // if you replied to a comment, then the comment owner will be notified
+    if (!ObjectId.isValid(req.user._id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const user = await User.findById(req.user._id);
     const parentOwner = await User.findById(parent.createdBy);
 
@@ -171,15 +200,27 @@ commentsRouter.patch('/:id', auth, async (req, res) => {
 commentsRouter.delete('/:id', auth, async (req, res) => {
   try {
     const p = findParent(parents, req.params);
+
+    if (!ObjectId.isValid(req.params[p])) {
+      return res.status(404).send('Cannot be found');
+    }
     const parent = await parents[p].findById(req.params[p])
     if (!parent) {
       res.status(404).send('Cannot be found');
       return;
     }
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const comment = await Comment.findById(req.params.id);
     if (!comment) {
       res.status(404).send('Cannot be found');
       return;
+    }
+
+    if (!ObjectId.isValid(req.user._id)) {
+      return res.status(404).send('Cannot be found');
     }
     const user = await User.findById(req.user._id);
     // In order to delete a comment, you should be either the owner of the comment

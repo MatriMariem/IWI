@@ -12,6 +12,8 @@ const jsonParser = bodyParser.json();
 const auth = require('./auth');
 const commentsRouter = require('./comments');
 
+const ObjectId = require('mongoose').Types.ObjectId;
+
 
 postsRouter.use('/:postId/comments', commentsRouter);
 
@@ -35,6 +37,10 @@ postsRouter.get('/', async (req, res) => {
   try {
 
     const p = findParent(parents, req.params);
+
+    if (!ObjectId.isValid(req.params[p])) {
+      return res.status(404).send('Cannot be found');
+    }
     const parent = await parents[p].findById(req.params[p])
     if (!parent) {
       res.status(404).send('Cannot be found');
@@ -51,6 +57,11 @@ postsRouter.get('/', async (req, res) => {
 // GET A SPECIFIC POST
 postsRouter.get('/:id', async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
+
     const post = await Post.findById(req.params.id)
     if (!post)
     {
@@ -69,6 +80,10 @@ postsRouter.post('/', auth, async (req, res) => {
   try {
 
     const p = findParent(parents, req.params);
+
+    if (!ObjectId.isValid(req.params[p])) {
+      return res.status(404).send('Cannot be found');
+    }
     const parent = await parents[p].findById(req.params[p])
     if (!parent) {
       res.status(404).send('Cannot be found');
@@ -117,6 +132,11 @@ postsRouter.post('/', auth, async (req, res) => {
 // EDIT THE POST
 postsRouter.patch('/:id', auth, async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
+
     const post = await Post.findById(req.params.id)
     if (!post)
     {
@@ -141,10 +161,17 @@ postsRouter.patch('/:id', auth, async (req, res) => {
 postsRouter.delete('/:id', auth, async (req, res) => {
   try {
     const p = findParent(parents, req.params);
+    if (!ObjectId.isValid(req.params[p])) {
+      return res.status(404).send('Cannot be found');
+    }
     const parent = await parents[p].findById(req.params[p])
     if (!parent) {
       res.status(404).send('Cannot be found');
       return;
+    }
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
     }
     const post = await Post.findById(req.params.id);
     if (!post) {

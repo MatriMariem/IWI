@@ -31,7 +31,7 @@ usersRouter.get('/:id', async (req, res) => {
   try {
     // const user = await User.findById(req.params.id).populate({ path: 'posts', select: 'content createdAt', populate: {path: 'createdIn', select: 'title'}, populate: {path: 'comments', select: 'content createdAt', populate: {path: 'createdBy', select: 'username'}}}).populate({ path: 'userClubs.createdClubs', select: 'title' });
     if (!ObjectId.isValid(req.params.id)) {
-      return res.status(400).send('Bad Request');
+      return res.status(404).send('Cannot be found');
     }
     const user = await User.findById(req.params.id)
     if (!user) {
@@ -118,8 +118,11 @@ usersRouter.post('/login', async (req, res) => {
 // EDIT A USER
 usersRouter.patch('/:id', auth, async (req, res) => {
   try {
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const user = await User.findById(req.params.id);
-    if (!user) return res.send("User already doesn't exist");
+    if (!user) return res.status(404).send('Cannot be found');
 
     if (req.user._id != user._id) return res.status(403).send("Access Denied");
 
@@ -142,8 +145,11 @@ usersRouter.patch('/:id', auth, async (req, res) => {
 // RESET PASSWORD
 usersRouter.patch('/:id/reset_password', auth, async (req, res) => {
   try {
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).send("User already doesn't exist");
+    if (!user) return res.status(404).send("Cannot be found");
 
     if (req.user._id != user._id) return res.status(403).send("Access Denied");
 
@@ -170,9 +176,13 @@ usersRouter.patch('/:id/reset_password', auth, async (req, res) => {
 // DELETE A USER
 usersRouter.delete('/:id', auth, async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const user = await User.findById(req.params.id);
 
-    if (!user) return res.status(404).send("User already doesn't exist");
+    if (!user) return res.status(404).send("Cannot be found");
 
     if (req.user._id != user._id) return res.status(403).send("Access Denied");
     // The user must re-enter their password

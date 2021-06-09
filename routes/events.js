@@ -7,6 +7,7 @@ const jsonParser = bodyParser.json();
 const auth = require('./auth');
 const postsRouter = require('./posts');
 
+const ObjectId = require('mongoose').Types.ObjectId;
 
 eventsRouter.use('/:eventId/posts', postsRouter);
 
@@ -44,6 +45,10 @@ eventsRouter.get('/', async (req, res) => {
 // GET A SPECIFIC EVENT
 eventsRouter.get('/:id', async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const event = await Event.findById(req.params.id);
     if (!event) {
       res.status(404).send('Cannot be found');
@@ -79,6 +84,10 @@ eventsRouter.post('/', auth, async (req, res) => {
 // EDIT THE EVENT
 eventsRouter.patch('/:id', auth, async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const event = await Event.findById(req.params.id);
     if (!event) {
       res.status(404).send('Cannot be found');
@@ -100,6 +109,10 @@ eventsRouter.patch('/:id', auth, async (req, res) => {
 // GET ALL PARTICIPANTS IN AN EVENT
 eventsRouter.get('/:id/participants', async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const event = await Event.findById(req.params.id);
     if (!event) {
       res.status(404).send('Cannot be found');
@@ -114,10 +127,18 @@ eventsRouter.get('/:id/participants', async (req, res) => {
 // PARTICIPATE IN AN EVENT
 eventsRouter.post('/:id/participants', auth, async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const event = await Event.findById(req.params.id);
     if (!event) {
       res.status(404).send('Cannot be found');
       return;
+    }
+
+    if (!ObjectId.isValid(req.user._id)) {
+      return res.status(404).send('Cannot be found');
     }
     const user = await User.findById(req.user._id);
     const owner = await User.findById(event.createdBy)
@@ -164,6 +185,10 @@ eventsRouter.post('/:id/participants', auth, async (req, res) => {
 // CANCEL YOUR PARTICIPATION IN AN EVENT
 eventsRouter.post('/:id/participants/cancel', auth, async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const event = await Event.findById(req.params.id);
     if (!event) {
       res.status(404).send('Cannot be found');
@@ -191,6 +216,10 @@ eventsRouter.post('/:id/participants/cancel', auth, async (req, res) => {
 // GET ALL INTERESTED USERS IN AN EVENT
 eventsRouter.get('/:id/interested', async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const event = await Event.findById(req.params.id);
     if (!event) {
       res.status(404).send('Cannot be found');
@@ -205,6 +234,10 @@ eventsRouter.get('/:id/interested', async (req, res) => {
 // BECOME INTERESTED IN AN EVENT
 eventsRouter.post('/:id/interested', auth, async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const event = await Event.findById(req.params.id);
     if (!event) {
       res.send({
@@ -212,6 +245,10 @@ eventsRouter.post('/:id/interested', auth, async (req, res) => {
         message: 'Cannot be found',
       });
       return;
+    }
+
+    if (!ObjectId.isValid(req.user._id)) {
+      return res.status(404).send('Cannot be found');
     }
     const user = await User.findById(req.user._id);
     const owner = await User.findById(event.createdBy)
@@ -264,6 +301,10 @@ eventsRouter.post('/:id/interested', auth, async (req, res) => {
 // CANCEL YOUR INTEREST IN AN EVENT
 eventsRouter.post('/:id/interested/cancel', auth, async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const event = await Event.findById(req.params.id);
     if (!event) {
       res.status(404).send('Cannot be found');
@@ -292,6 +333,10 @@ eventsRouter.post('/:id/interested/cancel', auth, async (req, res) => {
 // DELETE AN EVENT
 eventsRouter.delete('/:id', auth, async (req, res) => {
   try {
+
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(404).send('Cannot be found');
+    }
     const event = await Event.findById(req.params.id);
     if (!event) {
       res.status(404).send('Cannot be found');
