@@ -90,12 +90,10 @@ usersRouter.post('/login', async (req, res) => {
     // LOGIN INPUT DATA VALIDATION
     // Check Email
     const user = await User.findOne({"email": req.body.email});
-    console.log(`req`);
-    console.log(req.body);
-    if (!user) return res.send({ status: 'error', message: 'Email not found' });
+    if (!user) return res.status(403).json({ status: 'error', message: 'Email not found' });
     // Check Password
     const correctPassword = await bcrypt.compare(req.body.password, user.password);
-    if (!correctPassword) return res.send({ status: 'error', message: "Wrong password" });
+    if (!correctPassword) return res.status(403).json({ status: 'error', message: "Wrong password" });
     jwtr.sign(
       {"_id": user._id},
       process.env.SECRET_TOKEN
@@ -200,17 +198,16 @@ usersRouter.delete('/:id', auth, async (req, res) => {
 
 // LOGOUT
 usersRouter.post('/logout', auth, async (req, res) => {
-  console.log(req.headers);
   try {
-    console.log(req.headers)
     const destroyed = await jwtr.destroy(req.user.jti);
-    res.headers('auth-token', '');
+    res.header('auth-token', '');
     console.log("logged out!", destroyed);
     res.send({
       status: 'success',
       message: "logged out!"
     });
   } catch (error) {
+    console.log("Eroor:", error)
     res.send({
       status: 'error',
       message: error,

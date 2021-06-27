@@ -1,8 +1,6 @@
 components:
   securitySchemes:
-    auth-token:
+    ApiKeyAuth:
       type: apiKey
+      in: header
       name: "auth-token"
-      in: "header"
-      scheme: bearer
-      bearerFormat: JWT

@@ -9,15 +9,16 @@ const jwtr = new JWTR(redisClient);
 
 module.exports =  async (req, res, next) => {
   const token = req.header('auth-token');
-  // console.log(`token ${token}`);
+
   if (!token) return res.status(401).send('Please login!');
   try {
     const verified = await jwtr.verify(token, process.env.SECRET_TOKEN);
+
     req.user = verified;
-    // console.log("REQ.USER", req.user);
-    // console.log('--------------------');
+
     next();
   } catch (error) {
+    console.log("ERROR IS", error)
     res.send({
       status:'error',
       message: "Permission Denied"

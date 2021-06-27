@@ -28,6 +28,7 @@ paths:
         200:
           description: Returns "Homepage"
 
+
   /api/users:
     get:
       summary: Get all users
@@ -109,13 +110,67 @@ paths:
         409:
           description: "Already exists"
 
+  /api/users/login:
+    post:
+      summary: Login to your account
+      description: Login to your account
+      tags:
+      - "user"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: "user email"
+                  default: "user@email.com"
+                password:
+                  type: string
+                  description: "user password"
+                  default: "password"
+              required:
+                - email
+                - password
+      responses:
+        200:
+          description: "Successfully logged in"
+          schema:
+            type: "object"
+        403:
+          description: "Wrong credentials"
+
+  /api/users/logout:
+    post:
+      summary: Logout
+      description: Logout
+      tags:
+      - "user"
+      responses:
+        200:
+          description: "Successfully logged out!"
+          schema:
+            type: "object"
+        403:
+          description: "Wrong credentials"
+      security:
+        - ApiKeyAuth: []
+
+
 /api/gigs:
   post:
     tags:
       - "gig"
     description: Welcome to swagger-jsdoc!
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
     responses:
       200:
         description: Returns a mysterious string.
     security:
-      - auth-token: []
+      - ApiKeyAuth: []
